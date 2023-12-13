@@ -1,5 +1,7 @@
 package Screen;
 
+import client.Client;
+import client.GameClient;
 import client.ScreenManager;
 
 import javax.swing.*;
@@ -60,6 +62,8 @@ public class LoginPage extends ScreenManager {
         boxPanel.add(portLabel);
         boxPanel.add(port);
 
+        // ...
+
         Button loginBtn = new Button("로그인");
         loginBtn.setBounds(200, 75, 100, 30);
         loginBtn.addActionListener(new ActionListener() {
@@ -72,16 +76,20 @@ public class LoginPage extends ScreenManager {
                 if (userName.isEmpty() || passWord.isEmpty() || ipAddressText.isEmpty() || portNumber.isEmpty()) {
                     JOptionPane.showMessageDialog(LoginPage.this, "필수 정보를 모두 입력하세요.", "입력 오류", JOptionPane.ERROR_MESSAGE);
                     return;
+                } else {
+                    try {
+                        int port = Integer.parseInt(portNumber);
+                        // 로그인 성공 시 Client의 loginSuccess 메서드 호출
+                        ((Client) SwingUtilities.getWindowAncestor(LoginPage.this)).loginSuccess(ipAddressText, port);
+                    } catch (NumberFormatException nfe) {
+                        JOptionPane.showMessageDialog(LoginPage.this, "포트 번호가 유효하지 않습니다.", "입력 오류", JOptionPane.ERROR_MESSAGE);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(LoginPage.this, "게임 서버에 연결할 수 없습니다.", "연결 오류", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
-                else{
-                    navigateTo(new GamePage());
-                }
-                // 여기에서 입력된 값들을 사용하여 로그인 또는 기타 작업을 수행할 수 있습니다.
             }
-
         });
         boxPanel.add(loginBtn);
-
         // 화면에 박스 패널 추가
         add(boxPanel);
 

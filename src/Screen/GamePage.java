@@ -1,5 +1,6 @@
 package Screen;
 
+import client.GameClient;
 import client.ScreenManager;
 import game.GameCharacter;
 import game.Wall;
@@ -9,6 +10,7 @@ import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -16,7 +18,9 @@ public class GamePage extends ScreenManager {
     @NonNull
     private GameCharacter police, rat;
     private ArrayList<Wall> walls;
-//    private Set<Point> wallPositions; // 벽 위치를 추적하기 위한 Set
+    private GameClient gameClient; // Add a GameClient field.
+
+    //    private Set<Point> wallPositions; // 벽 위치를 추적하기 위한 Set
 private int[][] levelMap1 = {
         {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -37,8 +41,10 @@ private int[][] levelMap1 = {
 
 
 
-    public GamePage() {
+    public GamePage(GameClient client) {
         super(Icon.GAME);
+        this.gameClient = client; // Initialize the gameClient field.
+
         walls = new ArrayList<>(); // Initialize the list
 //        wallPositions = new HashSet<>(); // Set 초기화
 
@@ -159,7 +165,15 @@ private int[][] levelMap1 = {
         this.repaint();
     }
 
-
+    // Method to send move to the server
+    private void sendMoveToServer(int dx, int dy) {
+        try {
+            gameClient.sendMessage("MOVE " + dx + " " + dy);
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Handle exceptions, maybe try to reconnect or inform the player.
+        }
+    }
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
