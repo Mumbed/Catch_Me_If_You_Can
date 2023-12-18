@@ -9,8 +9,6 @@ public class GameServer  {
     static int clientCount = 0;
 
     private static List<ClientHandler> clients = new ArrayList<>();
-    //private List<ObjectOutputStream> outputStreams = new ArrayList<>();
-
     public GameServer(int port) {
         try {
             serverSocket = new ServerSocket(port);
@@ -24,12 +22,6 @@ public class GameServer  {
         while (true) {
             try {
                 Socket clientSocket = serverSocket.accept();
-                //ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-                //outputStreams.add(out);
-                //clients.add(clientSocket);
-                // 클라이언트에게 연결 성공 메시지를 보냅니다.
-                //out.writeObject("서버에 연결되었습니다.");
-
 
                 // 클라이언트를 위한 새로운 스레드 시작
                 ClientHandler clientHandler = new ClientHandler(clientSocket,clientCount+"번");
@@ -44,17 +36,6 @@ public class GameServer  {
         }
     }
 
-    // 모든 클라이언트에게 메시지를 브로드캐스트합니다.
-//    public void broadcastMessage(String message) {
-//        for (ObjectOutputStream out : outputStreams) {
-//            try {
-//                out.writeObject(message);
-//                out.flush();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
     public static void main(String[] args) {
         int port = 12345; // 포트 번호를 필요에 따라 변경하세요.
@@ -63,7 +44,7 @@ public class GameServer  {
         server.startServer();
     }
 
-    private class ClientHandler implements  Runnable {
+    private class ClientHandler implements  Runnable {// 서버 스레드 클래스
         private Socket clientSocket;
         private String name;
         BufferedReader is ;
@@ -78,7 +59,9 @@ public class GameServer  {
                 os = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream())); // 소켓 출력 스트림
                 String username = is.readLine();
                 System.out.println(username+" "+"서버연결성공");
-                this.name=username;
+                String arr[ ]=username.split(" ");
+
+                this.name=arr[0];
 
             } catch (IOException e) {
                 e.printStackTrace();

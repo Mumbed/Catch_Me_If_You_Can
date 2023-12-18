@@ -17,7 +17,7 @@ public class Client extends JFrame {
     public void loginSuccess(String serverAddress, int port,String username,String role) {
         try {
             GameClient gameClient = new GameClient(serverAddress, port , GameClient.GamePage.getInstance(),username,role);
-            gameClient.startClient();
+
 
             // GamePage로 전환합니다.
             getContentPane().removeAll();
