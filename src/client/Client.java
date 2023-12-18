@@ -6,7 +6,7 @@ import Screen.LoginPage;
 import javax.swing.*;
 
 public class Client extends JFrame {
-    private Client() {
+    Client() {
 
         setSize(1100, 700);
         getContentPane().add(new LoginPage()); // LoginPage에 클라이언트 인스턴스를 전달
