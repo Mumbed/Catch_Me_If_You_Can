@@ -1,11 +1,11 @@
 package client;
 
 import Screen.LoginPage;
-import Screen.GamePage;
+
 import javax.swing.*;
 
 public class Client extends JFrame {
-    private Client() {
+    Client() {
         setSize(1100, 700);
         getContentPane().add(new LoginPage()); // LoginPage에 클라이언트 인스턴스를 전달
         setResizable(false);
@@ -14,14 +14,13 @@ public class Client extends JFrame {
     }
 
     // GameClient를 생성하고 GamePage로 전환하는 메서드
-    public void loginSuccess(String serverAddress, int port) {
+    public void loginSuccess(String serverAddress, int port,String username,String role) {
         try {
-            GameClient gameClient = new GameClient(serverAddress, port);
-            gameClient.startClient();
+            GameClient gameClient = new GameClient(serverAddress, port , GameClient.GamePage.getInstance(),username,role);
 
             // GamePage로 전환합니다.
             getContentPane().removeAll();
-            getContentPane().add(new GamePage(gameClient));
+            getContentPane().add(GameClient.GamePage.getInstance());
             revalidate();
             repaint();
         } catch (Exception e) {

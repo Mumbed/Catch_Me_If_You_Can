@@ -11,12 +11,12 @@ import java.awt.event.ActionListener;
 
 public class LoginPage extends ScreenManager {
     public JTextField id;
-    public JTextField password;
+    public JTextField role;
     public JTextField ipAddress;
     public JTextField port;
 
     public JLabel idLabel;
-    public JLabel passwordLabel;
+    public JLabel roleLabel;
     public JLabel ipAddressLabel;
     public JLabel portLabel;
 
@@ -29,13 +29,14 @@ public class LoginPage extends ScreenManager {
 
         // 텍스트 필드 생성
         id = new JTextField();
-        password = new JTextField();
+        role = new JTextField();
         ipAddress = new JTextField();
         port = new JTextField();
-
+        ipAddress.setText("localhost");
+        port.setText("12345");
         // 라벨 생성 및 텍스트 설정
         idLabel = new JLabel("id:");
-        passwordLabel = new JLabel("password:");
+        roleLabel = new JLabel("role:");
         ipAddressLabel = new JLabel("IP Address:");
         portLabel = new JLabel("Port Number:");
 
@@ -43,8 +44,8 @@ public class LoginPage extends ScreenManager {
         idLabel.setBounds(10, 10, 50, 30);
         id.setBounds(100, 10, 100, 30);
 
-        passwordLabel.setBounds(10, 50, 100, 30);
-        password.setBounds(100, 50, 100, 30);
+        roleLabel.setBounds(10, 50, 100, 30);
+        role.setBounds(100, 50, 100, 30);
 
         ipAddressLabel.setBounds(10, 90, 100, 30);
         ipAddress.setBounds(100, 90, 100, 30);
@@ -55,8 +56,8 @@ public class LoginPage extends ScreenManager {
         // 박스 패널에 라벨과 텍스트 필드 추가
         boxPanel.add(idLabel);
         boxPanel.add(id);
-        boxPanel.add(passwordLabel);
-        boxPanel.add(password);
+        boxPanel.add(roleLabel);
+        boxPanel.add(role);
         boxPanel.add(ipAddressLabel);
         boxPanel.add(ipAddress);
         boxPanel.add(portLabel);
@@ -70,17 +71,17 @@ public class LoginPage extends ScreenManager {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String userName = id.getText();
-                String passWord = password.getText();
+                String roles = role.getText();
                 String ipAddressText = ipAddress.getText();
                 String portNumber = port.getText();
-                if (userName.isEmpty() || passWord.isEmpty() || ipAddressText.isEmpty() || portNumber.isEmpty()) {
+                if (userName.isEmpty() || roles.isEmpty() || ipAddressText.isEmpty() || portNumber.isEmpty()) {
                     JOptionPane.showMessageDialog(LoginPage.this, "필수 정보를 모두 입력하세요.", "입력 오류", JOptionPane.ERROR_MESSAGE);
                     return;
                 } else {
                     try {
                         int port = Integer.parseInt(portNumber);
                         // 로그인 성공 시 Client의 loginSuccess 메서드 호출
-                        ((Client) SwingUtilities.getWindowAncestor(LoginPage.this)).loginSuccess(ipAddressText, port);
+                        ((Client) SwingUtilities.getWindowAncestor(LoginPage.this)).loginSuccess(ipAddressText, port,userName,roles);
                     } catch (NumberFormatException nfe) {
                         JOptionPane.showMessageDialog(LoginPage.this, "포트 번호가 유효하지 않습니다.", "입력 오류", JOptionPane.ERROR_MESSAGE);
                     } catch (Exception ex) {

@@ -1,13 +1,11 @@
 package client;
 
-import lombok.NonNull;
 
 import java.awt.*;
 import javax.swing.*;
 
 public class ScreenManager extends JPanel {
 
-    @NonNull
     private final Image backgroundImageIcon;
 
     public ScreenManager(ImageIcon backgroundImageIcon) {

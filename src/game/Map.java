@@ -1,4 +1,4 @@
-//package game;
+package game;//package game;
 //
 //import Screen.Icon;
 //import client.ScreenManager;

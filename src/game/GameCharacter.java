@@ -27,7 +27,7 @@ public class GameCharacter {
         this.pos_X = x;
         this.pos_Y = y;
     }
-    public GameCharacter(String characterType, int initialX, int initialY) {
+    public GameCharacter(String characterType, int initialX, int initialY){
         loadImage(characterType);
         setPosition(initialX, initialY); // 초기 위치 설정
     }
