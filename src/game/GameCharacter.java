@@ -31,7 +31,24 @@ public class GameCharacter {
         loadImage(characterType);
         setPosition(initialX, initialY); // 초기 위치 설정
     }
-
+    public Image getImageByDirection(String direction) {
+        switch (direction) {
+            case "up":
+                return up;
+            case "down":
+                return down;
+            case "left":
+                return left;
+            case "right":
+                return right;
+            default:
+                return down; // 기본적으로 아래 방향 이미지 반환
+        }
+    }
+    public void setDirection(String direction) {
+        this.direction = direction;
+        this.state = getImageByDirection(direction);
+    }
     private void loadImage(String characterType) {
         this.up = new ImageIcon(getClass().getResource("/asset/Char/" + characterType + "_back.png")).getImage();
         this.down = new ImageIcon(getClass().getResource("/asset/Char/" + characterType + "_front.png")).getImage();

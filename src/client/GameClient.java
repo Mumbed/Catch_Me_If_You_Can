@@ -18,6 +18,7 @@ public class GameClient {
     private static String name;
     static String role;
     private int endNum=0;
+    private boolean timerStarted = false; // 타이머 시작 여부를 추적하는 변수
 
     public GameClient(String host, int port,GamePage gamePage,String username,String role) throws IOException {
         socket = new Socket(host,port);
@@ -33,29 +34,40 @@ public class GameClient {
             @Override
             public void run() {
                 System.out.println(username+" 시작");
+
                 while (true) {
                     try {
                         String msg = is.readLine();//서버로부터 받아드리는 문자
-
                         String[] msgArr = msg.split(" ");//name keycode role
                         if(!msgArr[0].equals(name)&&msgArr[1].equals("시작")) {
-                            //gamePage.startTimer();
                             System.out.println("플레이어 입장 게임시작");
+                        }
+                        if(msgArr[2].equals("police") && !timerStarted ){
+                            gamePage.startTimer(); // 게임 시작 시 타이머 시작
+                            timerStarted = true; // 타이머 시작 상태를 true로 설정
+                        }
+                        if(msgArr[2].equals("rat") && !timerStarted ){
+                            gamePage.startTimer(); // 게임 시작 시 타이머 시작
+                            timerStarted = true; // 타이머 시작 상태를 true로 설정
                         }
                         System.out.println("서버로부터 수신받음 : "+msgArr[0]);
                         System.out.println("서버로부터 수신받음 : "+msgArr[1]);
                         System.out.println("서버로부터 수신받음 : "+msgArr[2]);
+
                         if(msgArr[1].equals("서버연결성공")){
                             name=msgArr[0];
                             System.out.println(name+"클라이언트 서버연결성공");
+
                         }
                         else if(!name.equals(msgArr[0])&&msgArr[2].equals("rat")&&!msgArr[1].equals("end")&&!msgArr[1].equals("reset")&&!msgArr[1].equals("시작")){
                             System.out.println("난"+name+"얘는"+msgArr[0]+msgArr[2]+"상대방움직임"+msgArr[1]);
                             gamePage.moveCharactersPolice(Integer.parseInt(msgArr[1]),"rat");
+
                         }
                         else if(!name.equals(msgArr[0])&&msgArr[2].equals("police")&&!msgArr[1].equals("end")&&!msgArr[1].equals("reset")&&!msgArr[1].equals("시작")){
                             System.out.println("난"+name+"얘는"+msgArr[0]+msgArr[2]+"상대방움직임"+msgArr[1]);
                             gamePage.moveCharactersPolice(Integer.parseInt(msgArr[1]),"police");
+
                         }
                         else if(!name.equals(msgArr[0]) && msgArr[1].equals("reset")){
                             gamePage.resetGame();
@@ -107,15 +119,15 @@ public class GameClient {
                 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                 {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1},
                 {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-                {1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
+                {1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
                 {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-                {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
+                {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
                 {1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1},
-                {1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
+                {1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
                 {1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
                 {1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1},
                 {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-                {1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
+                {1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
                 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
@@ -123,7 +135,7 @@ public class GameClient {
             // 게임 관련 데이터 초기화
             // 예: 플레이어 위치 초기화, 점수 초기화 등
             //startTimer();
-
+            startTimer(); // 타이머 다시 시작
             policex = 50;
             policey = 80;
             ratx = 930;
@@ -156,11 +168,17 @@ public class GameClient {
             }
 
         }
-
+        private JLabel timerLabel; // 타이머를 표시할 레이블
+        private long startTime;    // 게임 시작 시간
+        private Timer timer;       // 스윙 타이머
+        private int ratSkill = 0; // 도둑 캐릭터의 스킬 카운터 변수
+        private boolean isUsingSkill = false; // 스킬 사용 중인지 여부를 나타내는 변수
 
         private GamePage() {
 
             super(Icon.GAME);
+            this.setLayout(new BorderLayout()); // 레이아웃을 BorderLayout으로 설정
+
             this.Role=role;
             // Initialize the gameClient field.
             walls = new ArrayList<>(); // Initialize the list
@@ -185,7 +203,16 @@ public class GameClient {
                     }
                 }
             }
+            // 타이머 레이블 초기화 및 추가
+            timerLabel = new JLabel("00:00:00");
+            timerLabel.setHorizontalAlignment(JLabel.CENTER); // 레이블 텍스트를 중앙 정렬
+            timerLabel.setPreferredSize(new Dimension(100, 30)); // 레이블 크기 설정
+            this.revalidate();
+            this.repaint();
+            this.add(timerLabel, BorderLayout.SOUTH); // 레이블을 패널 하단에 추가
 
+            // 타이머 객체 초기화
+            timer = new Timer(1000, e -> updateTimer());
             setFocusable(true);
             requestFocusInWindow();
 
@@ -216,6 +243,17 @@ public class GameClient {
                         }
                     } else {
                         moveCharactersKeyPressed(key, rat);
+                        if (key == KeyEvent.VK_SPACE && ratSkill < 3) {
+                            if (!collisionWithWall(rat.getPos_X(), rat.getPos_Y(), rat.getWidth(), rat.getHeight())) {
+                                ratSkill++;
+                                isUsingSkill = true; // 스킬 사용 상태로 변경
+                                for(int i=0;i<2;i++){
+                                    sendMoveToServer(key);
+                                }
+
+                                System.out.println("도둑이 스킬을 사용하였습니다.");
+                            }
+                        }
                     }
                 }
 
@@ -239,8 +277,22 @@ public class GameClient {
                     requestFocusInWindow();
                 }
             });
-        }
 
+
+        }
+        public void startTimer() {
+            startTime = System.currentTimeMillis();
+            timer.start();
+        }
+        private void updateTimer() {
+            long elapsedTime = System.currentTimeMillis() - startTime;
+            int seconds = (int) (elapsedTime / 1000) % 60;
+            int minutes = (int) ((elapsedTime / (1000 * 60)) % 60);
+            int hours = (int) ((elapsedTime / (1000 * 60 * 60)) % 24);
+
+            String timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+            timerLabel.setText(timeString);
+        }
 
 
 
@@ -248,19 +300,31 @@ public class GameClient {
             int dx = 0;
             int dy = 0;
             int moveDistance = 20; // 이동 거리를 벽의 너비/높이와 일치시킵니다.
-
+            if (isUsingSkill) {
+                System.out.println("야호");
+                moveDistance = 100; // 도둑 캐릭터가 스킬을 사용 중이면 이동 거리를 60으로 변경
+                isUsingSkill =false;
+            }
             switch (key) {
                 case KeyEvent.VK_RIGHT:
                     dx = moveDistance;
+                    character.setDirection("right");
+
                     break;
                 case KeyEvent.VK_LEFT:
                     dx = -moveDistance;
+                    character.setDirection("left");
+
                     break;
                 case KeyEvent.VK_UP:
                     dy = -moveDistance;
+                    character.setDirection("up");
+
                     break;
                 case KeyEvent.VK_DOWN:
                     dy = moveDistance;
+                    character.setDirection("down");
+
                     break;
                 // 다른 키 처리가 필요한 경우 여기에 추가
             }
