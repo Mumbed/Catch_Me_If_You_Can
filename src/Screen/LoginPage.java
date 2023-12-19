@@ -23,10 +23,19 @@ public class LoginPage extends ScreenManager {
 
     public LoginPage() {
         super(Icon.BACKGROUND);
+//        Font pixelArtFont = loadCustomFont("path_to_your_pixel_art_font.ttf");
 
-        // 박스 패널 생성하여 레이아웃 설정
-        JPanel boxPanel = new JPanel(null);
-        boxPanel.setBounds(450, 500, 300, 200);
+
+        JPanel boxPanel = new JPanel(null) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Draw the background image to fill the panel
+                ImageIcon backgroundIcon = new ImageIcon("asset/screen/pan.png");
+                g.drawImage(backgroundIcon.getImage(), 0, 0, this.getWidth(), this.getHeight(), null);
+            }
+        };
+        boxPanel.setBounds(350, 350, 400, 300);
 
         // 텍스트 필드 생성
         id = new JTextField();
@@ -36,34 +45,34 @@ public class LoginPage extends ScreenManager {
         port.setText("12345");
 
         // 라벨 생성 및 텍스트 설정
-        idLabel = new JLabel("id:");
-        ipAddressLabel = new JLabel("IP Address:");
-        portLabel = new JLabel("Port Number:");
+        idLabel = new JLabel("");
+        ipAddressLabel = new JLabel("");
+        portLabel = new JLabel("");
 
         // 텍스트 필드 및 라벨의 위치 및 크기 설정
-        idLabel.setBounds(10, 10, 50, 30);
-        id.setBounds(100, 10, 100, 30);
+        idLabel.setBounds(10, 120, 50, 30);
+        id.setBounds(105, 120, 200, 30);
 
-        ipAddressLabel.setBounds(10, 50, 100, 30);
-        ipAddress.setBounds(100, 50, 100, 30);
+        ipAddressLabel.setBounds(10, 160, 100, 30);
+        ipAddress.setBounds(105, 160, 200, 30);
 
-        portLabel.setBounds(10, 90, 100, 30);
-        port.setBounds(100, 90, 100, 30);
+        portLabel.setBounds(10, 200, 100, 30);
+        port.setBounds(105, 200, 200, 30);
 
         // 라디오 버튼 생성 및 그룹화
-        policeRadio = new JRadioButton("Police");
-        ratRadio = new JRadioButton("Rat");
+        policeRadio = new JRadioButton("");
+        ratRadio = new JRadioButton("");
         roleButtonGroup = new ButtonGroup();
 
         roleButtonGroup.add(policeRadio);
         roleButtonGroup.add(ratRadio);
 
-        policeRadio.setBounds(10, 130, 100, 30);
-        ratRadio.setBounds(120, 130, 100, 30);
+        policeRadio.setBounds(190, 70, 100, 30);
+        ratRadio.setBounds(250, 70, 100, 30);
 
         // 로그인 버튼 생성 및 액션 리스너 설정
         Button loginBtn = new Button("로그인");
-        loginBtn.setBounds(200, 75, 100, 30);
+        loginBtn.setBounds(116, 250, 200, 40);
         loginBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -107,3 +116,5 @@ public class LoginPage extends ScreenManager {
         add(boxPanel);
     }
 }
+
+

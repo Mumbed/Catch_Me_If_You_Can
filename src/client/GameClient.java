@@ -395,13 +395,25 @@ public class GameClient {
         public void endGame() {
             sendCatchToServer("end"); // 서버에게 게임 종료 신호를 보냅니다.
 
-            // 현재 게임 페이지를 종료
-            SwingUtilities.getWindowAncestor(this).dispose();
-            // 새 로그인 화면 생성 및 표시
-            SwingUtilities.invokeLater(() -> {
-                Client.getInstance().setVisible(true);
-            });
+            // 게임 종료 이미지 표시
+            ImageIcon gameOverIcon = new ImageIcon("src/asset/screen/gameover.png"); // gameover 이미지 경로에 맞게 수정
+            JLabel gameOverLabel = new JLabel(gameOverIcon);
+            gameOverLabel.setBounds(0, 0, getWidth(), getHeight());
+            add(gameOverLabel);
 
+            // 타이머 설정
+            Timer gameOverTimer = new Timer(5000, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    // 타이머가 만료되면 현재 게임 페이지를 종료하고 로그인 화면으로 이동
+                    SwingUtilities.getWindowAncestor(GamePage.this).dispose();
+                    SwingUtilities.invokeLater(() -> {
+                        Client.getInstance().setVisible(true);
+                    });
+                }
+            });
+            gameOverTimer.setRepeats(false); // 타이머를 한 번만 실행하도록 설정
+            gameOverTimer.start();
         }
 
         private void screenDraw(Graphics g){
