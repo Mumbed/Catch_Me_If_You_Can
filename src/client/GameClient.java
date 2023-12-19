@@ -19,6 +19,9 @@ public class GameClient {
     static String role;
     private int endNum=0;
     private boolean timerStarted = false; // 타이머 시작 여부를 추적하는 변수
+    private static boolean isUsingSkill = false; // 스킬 사용 중인지 여부를 나타내는 변수
+
+    private static int ratSkill = 0; // 도둑 캐릭터의 스킬 카운터 변수
 
     public GameClient(String host, int port,GamePage gamePage,String username,String role) throws IOException {
         socket = new Socket(host,port);
@@ -59,14 +62,23 @@ public class GameClient {
                             System.out.println(name+"클라이언트 서버연결성공");
 
                         }
+
                         else if(!name.equals(msgArr[0])&&msgArr[2].equals("rat")&&!msgArr[1].equals("end")&&!msgArr[1].equals("reset")&&!msgArr[1].equals("시작")){
                             System.out.println("난"+name+"얘는"+msgArr[0]+msgArr[2]+"상대방움직임"+msgArr[1]);
-                            gamePage.moveCharactersPolice(Integer.parseInt(msgArr[1]),"rat");
+                            if(Integer.parseInt(msgArr[1])!=32){
+                                gamePage.moveCharactersPolice(Integer.parseInt(msgArr[1]),"rat",isUsingSkill);
+                                isUsingSkill=false;
+                            }
+                            else if(Integer.parseInt(msgArr[1])==32&&ratSkill<5){
+                                System.out.println(ratSkill+"상대 번");
+                                isUsingSkill=true;
+                                ratSkill++;
+                            }
 
                         }
                         else if(!name.equals(msgArr[0])&&msgArr[2].equals("police")&&!msgArr[1].equals("end")&&!msgArr[1].equals("reset")&&!msgArr[1].equals("시작")){
                             System.out.println("난"+name+"얘는"+msgArr[0]+msgArr[2]+"상대방움직임"+msgArr[1]);
-                            gamePage.moveCharactersPolice(Integer.parseInt(msgArr[1]),"police");
+                            gamePage.moveCharactersPolice(Integer.parseInt(msgArr[1]),"police",false);
 
                         }
                         else if(!name.equals(msgArr[0]) && msgArr[1].equals("reset")){
@@ -119,15 +131,15 @@ public class GameClient {
                 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
                 {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1},
                 {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-                {1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
+                {1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
                 {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-                {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
+                {1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
                 {1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1},
-                {1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
+                {1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
                 {1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
                 {1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1},
                 {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-                {1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
+                {1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
                 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
@@ -165,14 +177,14 @@ public class GameClient {
             // 2판이 끝났다면 로그인 화면으로 돌아가기
             if (gameCount == 2) {
                 endGame();
+                gameCount=0;
+                System.out.println(gameCount+"게임이 모두끝났음초기화됨");
             }
 
         }
         private JLabel timerLabel; // 타이머를 표시할 레이블
         private long startTime;    // 게임 시작 시간
         private Timer timer;       // 스윙 타이머
-        private int ratSkill = 0; // 도둑 캐릭터의 스킬 카운터 변수
-        private boolean isUsingSkill = false; // 스킬 사용 중인지 여부를 나타내는 변수
 
         private GamePage() {
 
@@ -226,9 +238,9 @@ public class GameClient {
                 @Override
                 public void keyPressed(KeyEvent e) {
                     int key = e.getKeyCode();
-                    sendMoveToServer(key);
                     if (role.equals("police")) {
                         moveCharactersKeyPressed(key, police);
+                        sendMoveToServer(key);
                         if (key == KeyEvent.VK_SPACE && isCharactersNear(police, rat, 40)) {
                             // 게임 종료 처리
                             System.out.println("게임 종료: 경찰이 쥐를 잡았습니다.");
@@ -241,19 +253,19 @@ public class GameClient {
                             }
                             // 게임 종료 로직 추가
                         }
-                    } else {
+                    } else if(role.equals("rat")){
                         moveCharactersKeyPressed(key, rat);
-                        if (key == KeyEvent.VK_SPACE && ratSkill < 3) {
+                        sendMoveToServer(key);
+                        if (key == KeyEvent.VK_SPACE && ratSkill < 5){
                             if (!collisionWithWall(rat.getPos_X(), rat.getPos_Y(), rat.getWidth(), rat.getHeight())) {
+                                System.out.println(ratSkill+"번");
                                 ratSkill++;
                                 isUsingSkill = true; // 스킬 사용 상태로 변경
-                                for(int i=0;i<2;i++){
-                                    sendMoveToServer(key);
-                                }
-
+                                //sendMoveToServer(30);
                                 System.out.println("도둑이 스킬을 사용하였습니다.");
                             }
                         }
+
                     }
                 }
 
@@ -299,9 +311,9 @@ public class GameClient {
         public void moveCharactersKeyPressed(int key,GameCharacter character) {
             int dx = 0;
             int dy = 0;
-            int moveDistance = 20; // 이동 거리를 벽의 너비/높이와 일치시킵니다.
+            int moveDistance = 20;
             if (isUsingSkill) {
-                System.out.println("야호");
+                System.out.println("스킬 사용 야호!!");
                 moveDistance = 100; // 도둑 캐릭터가 스킬을 사용 중이면 이동 거리를 60으로 변경
                 isUsingSkill =false;
             }
@@ -335,13 +347,18 @@ public class GameClient {
                 character.move(dx, dy);
             }
         }
-        public void moveCharactersPolice(int key,String characterName){
+        public void moveCharactersPolice(int key,String characterName,boolean isUsingSkill){
             GameCharacter character = null;
             int dx = 0;
             int dy = 0;
             int moveDistance = 20; // 이동 거리를 벽의 너비/높이와 일치시킵니다.
             if(characterName.equals("rat"))character=rat;
             if(characterName.equals("police"))character=police;
+            if (isUsingSkill) {
+                System.out.println("스킬 사용 야호!!");
+                moveDistance = 100; // 도둑 캐릭터가 스킬을 사용 중이면 이동 거리를 60으로 변경
+
+            }
 
             switch (key) {
                 case 39:
@@ -395,25 +412,13 @@ public class GameClient {
         public void endGame() {
             sendCatchToServer("end"); // 서버에게 게임 종료 신호를 보냅니다.
 
-            // 게임 종료 이미지 표시
-            ImageIcon gameOverIcon = new ImageIcon("src/asset/screen/gameover.png"); // gameover 이미지 경로에 맞게 수정
-            JLabel gameOverLabel = new JLabel(gameOverIcon);
-            gameOverLabel.setBounds(0, 0, getWidth(), getHeight());
-            add(gameOverLabel);
-
-            // 타이머 설정
-            Timer gameOverTimer = new Timer(5000, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    // 타이머가 만료되면 현재 게임 페이지를 종료하고 로그인 화면으로 이동
-                    SwingUtilities.getWindowAncestor(GamePage.this).dispose();
-                    SwingUtilities.invokeLater(() -> {
-                        Client.getInstance().setVisible(true);
-                    });
-                }
+            // 현재 게임 페이지를 종료
+            SwingUtilities.getWindowAncestor(this).dispose();
+            // 새 로그인 화면 생성 및 표시
+            SwingUtilities.invokeLater(() -> {
+                Client.getInstance().setVisible(true);
             });
-            gameOverTimer.setRepeats(false); // 타이머를 한 번만 실행하도록 설정
-            gameOverTimer.start();
+
         }
 
         private void screenDraw(Graphics g){
