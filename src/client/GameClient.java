@@ -15,8 +15,9 @@ public class GameClient {
     static BufferedWriter os;
     BufferedReader is;
     protected GamePage gamePage;
-    private String name;
+    private static String name;
     static String role;
+    private int endNum=0;
 
     public GameClient(String host, int port,GamePage gamePage,String username,String role) throws IOException {
         socket = new Socket(host,port);
@@ -35,7 +36,12 @@ public class GameClient {
                 while (true) {
                     try {
                         String msg = is.readLine();//서버로부터 받아드리는 문자
+
                         String[] msgArr = msg.split(" ");//name keycode role
+                        if(!msgArr[0].equals(name)&&msgArr[1].equals("시작")) {
+                            //gamePage.startTimer();
+                            System.out.println("플레이어 입장 게임시작");
+                        }
                         System.out.println("서버로부터 수신받음 : "+msgArr[0]);
                         System.out.println("서버로부터 수신받음 : "+msgArr[1]);
                         System.out.println("서버로부터 수신받음 : "+msgArr[2]);
@@ -43,18 +49,21 @@ public class GameClient {
                             name=msgArr[0];
                             System.out.println(name+"클라이언트 서버연결성공");
                         }
-                        else if(!role.equals(msgArr[2])&&msgArr[2].equals("rat")&&!msgArr[1].equals("end")){
+                        else if(!name.equals(msgArr[0])&&msgArr[2].equals("rat")&&!msgArr[1].equals("end")&&!msgArr[1].equals("reset")&&!msgArr[1].equals("시작")){
                             System.out.println("난"+name+"얘는"+msgArr[0]+msgArr[2]+"상대방움직임"+msgArr[1]);
                             gamePage.moveCharactersPolice(Integer.parseInt(msgArr[1]),"rat");
                         }
-                        else if(!role.equals(msgArr[2])&&msgArr[2].equals("police")&&!msgArr[1].equals("end")){
+                        else if(!name.equals(msgArr[0])&&msgArr[2].equals("police")&&!msgArr[1].equals("end")&&!msgArr[1].equals("reset")&&!msgArr[1].equals("시작")){
                             System.out.println("난"+name+"얘는"+msgArr[0]+msgArr[2]+"상대방움직임"+msgArr[1]);
                             gamePage.moveCharactersPolice(Integer.parseInt(msgArr[1]),"police");
                         }
-                        else if(!role.equals(msgArr[2])&&msgArr[1].equals("end")){
-                            gamePage.endGame();
+                        else if(!name.equals(msgArr[0]) && msgArr[1].equals("reset")){
+                            gamePage.resetGame();
                         }
-
+                        else if(!name.equals(msgArr[0])&&msgArr[1].equals("end")&&endNum<1){
+                            gamePage.endGame();
+                            endNum++;
+                        }
                         // 받은 패킷을 텍스트 영역에 표시한다.
 
                     } catch (IOException e) {
@@ -80,10 +89,11 @@ public class GameClient {
     static class GamePage extends ScreenManager{
         private GameCharacter police, rat;
         private ArrayList<Wall> walls;
-        private  GameClient gameClient; // Add a GameClient field.
         private int policex, policey,ratx,raty; // 플레이어 위치 좌표
         private String Role;
-        private final int SPEED = 5; // 플레이어 이동 속도
+        private int gameCount = 0; // 현재 게임 횟수를 추적
+        private boolean Catch;
+
         public static GamePage getInstance() {//싱글톤 적용
             return Holder.INSTANCE;
         }
@@ -109,7 +119,43 @@ public class GameClient {
                 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
+        public void resetGame() throws IOException {
+            // 게임 관련 데이터 초기화
+            // 예: 플레이어 위치 초기화, 점수 초기화 등
+            //startTimer();
 
+            policex = 50;
+            policey = 80;
+            ratx = 930;
+            raty = 520;
+            police.setPosition(policex, policey);
+            rat.setPosition(ratx, raty);
+//
+//            if(role.equals("police")&&gameCount==0){
+//                firstCop=name;
+//            }else if(role.equals("police")&&gameCount==1){
+//                secondCop=name;
+//            }
+
+            // 역할 교체
+            if (role.equals("police")&&gameCount==0) {
+
+                role = "rat";
+            } else {
+                role = "police";
+            }
+
+
+
+            // 게임 횟수 증가
+            gameCount++;
+
+            // 2판이 끝났다면 로그인 화면으로 돌아가기
+            if (gameCount == 2) {
+                endGame();
+            }
+
+        }
 
 
         private GamePage() {
@@ -123,8 +169,6 @@ public class GameClient {
             policey=80;
             ratx=930;
             raty=520;
-
-
 
             police = new GameCharacter("police", policex, policey); // 격자에 맞
             rat = new GameCharacter("rat", ratx, raty); // 격자에 맞춰 위치 조정
@@ -161,8 +205,13 @@ public class GameClient {
                         if (key == KeyEvent.VK_SPACE && isCharactersNear(police, rat, 40)) {
                             // 게임 종료 처리
                             System.out.println("게임 종료: 경찰이 쥐를 잡았습니다.");
-                            sendCatchToServer("end");
-                            endGame(); // 게임 종료 메소드 호출
+                            //gameIsOver();
+                            sendCatchToServer("reset");
+                            try {
+                                resetGame(); // 게임 리셋 및 역할 교체
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            }
                             // 게임 종료 로직 추가
                         }
                     } else {
@@ -175,8 +224,6 @@ public class GameClient {
                     // 필요한 경우 구현
                 }
             });
-
-
             Timer timer = new Timer(1, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -193,6 +240,8 @@ public class GameClient {
                 }
             });
         }
+
+
 
 
         public void moveCharactersKeyPressed(int key,GameCharacter character) {
@@ -280,13 +329,15 @@ public class GameClient {
             return Math.sqrt(dx * dx + dy * dy) <= distance;
         }
         public void endGame() {
+            sendCatchToServer("end"); // 서버에게 게임 종료 신호를 보냅니다.
+
             // 현재 게임 페이지를 종료
             SwingUtilities.getWindowAncestor(this).dispose();
-
             // 새 로그인 화면 생성 및 표시
             SwingUtilities.invokeLater(() -> {
-                Client client = new Client();
+                Client.getInstance().setVisible(true);
             });
+
         }
 
         private void screenDraw(Graphics g){
