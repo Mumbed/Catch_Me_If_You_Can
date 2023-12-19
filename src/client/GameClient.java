@@ -10,6 +10,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import static java.lang.Thread.sleep;
+
 public class GameClient {
     private Socket socket;
     static BufferedWriter os;
@@ -45,14 +47,23 @@ public class GameClient {
                         if(!msgArr[0].equals(name)&&msgArr[1].equals("시작")) {
                             System.out.println("플레이어 입장 게임시작");
                         }
-                        if(msgArr[2].equals("police") && !timerStarted ){
+//                        if(!name.equals(msgArr[2])&&msgArr[2].equals("rat") && !timerStarted ){
+//                            gamePage.startTimer(); // 게임 시작 시 타이머 시작
+//                            timerStarted = true; // 타이머 시작 상태를 true로 설정
+//                        }
+                        if(!name.equals(msgArr[0])&&"상대시작".equals(msgArr[1])){
                             gamePage.startTimer(); // 게임 시작 시 타이머 시작
+//                            sleep(1000);
                             timerStarted = true; // 타이머 시작 상태를 true로 설정
                         }
-                        if(msgArr[2].equals("rat") && !timerStarted ){
+                        if(!name.equals(msgArr[0])&&"시작".equals(msgArr[1])){
+                            System.out.println("플레이어 입장 게임시작");
+                            gamePage.sendCatchToServer("상대시작");
                             gamePage.startTimer(); // 게임 시작 시 타이머 시작
+//                            sleep(1000);
                             timerStarted = true; // 타이머 시작 상태를 true로 설정
                         }
+
                         System.out.println("서버로부터 수신받음 : "+msgArr[0]);
                         System.out.println("서버로부터 수신받음 : "+msgArr[1]);
                         System.out.println("서버로부터 수신받음 : "+msgArr[2]);
@@ -60,10 +71,9 @@ public class GameClient {
                         if(msgArr[1].equals("서버연결성공")){
                             name=msgArr[0];
                             System.out.println(name+"클라이언트 서버연결성공");
-
                         }
 
-                        else if(!name.equals(msgArr[0])&&msgArr[2].equals("rat")&&!msgArr[1].equals("end")&&!msgArr[1].equals("reset")&&!msgArr[1].equals("시작")){
+                        else if(!name.equals(msgArr[0])&&msgArr[2].equals("rat")&&!msgArr[1].equals("end")&&!msgArr[1].equals("reset")&&!msgArr[1].equals("시작")&&!"상대시작".equals(msgArr[1])){
                             System.out.println("난"+name+"얘는"+msgArr[0]+msgArr[2]+"상대방움직임"+msgArr[1]);
                             if(Integer.parseInt(msgArr[1])!=32){
                                 gamePage.moveCharactersPolice(Integer.parseInt(msgArr[1]),"rat",isUsingSkill);
@@ -76,7 +86,7 @@ public class GameClient {
                             }
 
                         }
-                        else if(!name.equals(msgArr[0])&&msgArr[2].equals("police")&&!msgArr[1].equals("end")&&!msgArr[1].equals("reset")&&!msgArr[1].equals("시작")){
+                        else if(!name.equals(msgArr[0])&&msgArr[2].equals("police")&&!msgArr[1].equals("end")&&!msgArr[1].equals("reset")&&!msgArr[1].equals("시작")&&!"상대시작".equals(msgArr[1])){
                             System.out.println("난"+name+"얘는"+msgArr[0]+msgArr[2]+"상대방움직임"+msgArr[1]);
                             gamePage.moveCharactersPolice(Integer.parseInt(msgArr[1]),"police",false);
 
@@ -84,7 +94,7 @@ public class GameClient {
                         else if(!name.equals(msgArr[0]) && msgArr[1].equals("reset")){
                             gamePage.resetGame();
                         }
-                        else if(!name.equals(msgArr[0])&&msgArr[1].equals("end")&&endNum<1){
+                        else if(!name.equals(msgArr[0]) && msgArr[1].equals("end") && endNum < 1){
                             gamePage.endGame();
                             endNum++;
                         }
@@ -154,6 +164,7 @@ public class GameClient {
             raty = 520;
             police.setPosition(policex, policey);
             rat.setPosition(ratx, raty);
+            ratSkill = 0;
 //
 //            if(role.equals("police")&&gameCount==0){
 //                firstCop=name;
@@ -168,9 +179,6 @@ public class GameClient {
             } else {
                 role = "police";
             }
-
-
-
             // 게임 횟수 증가
             gameCount++;
 

@@ -1,11 +1,13 @@
 package server;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 
 public class GameServer  {
     private ServerSocket serverSocket;
@@ -45,8 +47,6 @@ public class GameServer  {
             }
         }
     }
-
-
     public static void main(String[] args) {
         int port = 12345; // 포트 번호를 필요에 따라 변경하세요.
 
@@ -95,38 +95,57 @@ public class GameServer  {
 
         }
 
-        private void gameOver2(){
-            gameCount+=1;
-            endTime=getTime()-startTime;
-            endTime/=1000;
-            System.out.println("시작시간 : "+startTime);
-            System.out.println("잡힌시각 : "+getTime());
-            System.out.println("걸린시간 : "+endTime);
+        private void gameOver2() {
+            gameCount += 1;
+            endTime = getTime() - startTime;
+            endTime /= 1000;
+            System.out.println("시작시간 : " + startTime);
+            System.out.println("잡힌시각 : " + getTime());
+            System.out.println("걸린시간 : " + endTime);
 
-            if(gameCount==1){
-                firstTime=(int)endTime;
-                System.out.println(gameCount+"번째 게임 종료! 걸린 시간: " + firstTime + " 밀리초");
-                String message = gameCount+"번째 게임이 종료되었습니다!\n 범인 검거까지 : " + firstTime+ " 초 걸렸습니다\n";
-                JOptionPane.showMessageDialog(null, message, "게임 결과", JOptionPane.INFORMATION_MESSAGE);
-                startTime=getTime();
-                System.out.println("첫번째 시작시간초기화 두번째 게임시작시간"+startTime);
-            }
-            if(gameCount==2){
-                secondTime= (int) endTime;
-                if(firstTime<secondTime){
-                    victoryName=firstCop;
-                }else{
-                    victoryName=secondCop;
+            // 커스텀 메시지 패널 생성
+            JPanel panel = new JPanel() {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    Image bgImage = new ImageIcon("").getImage();
+                    g.drawImage(bgImage, 0, 0, this.getWidth(), this.getHeight(), this);
                 }
-                System.out.println(firstTime+"대"+secondTime+"로");
-                System.out.println(gameCount+"번째 게임 종료! 걸린 시간: " + secondTime + " 밀리초");
-                String message = gameCount+"번째 게임이 종료되었습니다!\n 범인 검거까지 : " + secondTime+ " 초 걸렸습니다\n"+"따라서 승자는"+victoryName;
-                JOptionPane.showMessageDialog(null, message, "게임 결과", JOptionPane.INFORMATION_MESSAGE);
-                clients.clear();
-                gameCount=0;
-                clientCount=0;
-            }
+            };
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
+            // 이미지 레이블 추가
+            ImageIcon imageIcon = new ImageIcon("asset/screen/chepo.png");
+            JLabel imageLabel = new JLabel(imageIcon);
+            imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(imageLabel);
+            if (gameCount == 1) {
+                firstTime = (int) endTime;
+                System.out.println(gameCount + "번째 게임 종료! 걸린 시간: " + firstTime + " 밀리초");
+                startTime = getTime();
+                System.out.println("첫번째 시작시간초기화 두번째 게임시작시간" + startTime);
+            }
+            if (gameCount == 2) {
+                secondTime = (int) endTime;
+                if (firstTime < secondTime) {
+                    victoryName = firstCop;
+                } else {
+                    victoryName = secondCop;
+                }
+                System.out.println(firstTime + "대" + secondTime + "로");
+                System.out.println(gameCount + "번째 게임 종료! 걸린 시간: " + secondTime + " 밀리초");
+                clients.clear();
+                gameCount = 0;
+                clientCount = 0;
+            }
+            // 텍스트 레이블 추가
+            String message = gameCount + "번째 게임이 종료되었습니다!\n 범인 검거까지 : " + (gameCount == 1 ? firstTime : secondTime) + " 초 걸렸습니다\n" + (gameCount == 2 ? "따라서 승자는 " + victoryName : "");
+            JLabel messageLabel = new JLabel(message);
+            messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panel.add(messageLabel);
+
+            // 커스텀 패널을 사용하여 JOptionPane 표시
+            JOptionPane.showMessageDialog(null, panel, "게임 결과", JOptionPane.PLAIN_MESSAGE);
 
 
         }
