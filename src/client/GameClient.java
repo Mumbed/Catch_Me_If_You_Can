@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.Socket;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class GameClient {
@@ -18,6 +20,8 @@ public class GameClient {
     private static String name;
     static String role;
     private int endNum=0;
+    private static int gameCount=1;
+
 
     public GameClient(String host, int port,GamePage gamePage,String username,String role) throws IOException {
         socket = new Socket(host,port);
@@ -27,6 +31,8 @@ public class GameClient {
         os = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         os.write(username+" "+role+"\n");
         System.out.println("내역할은  : "+role);
+
+
         os.flush();
         this.gamePage=gamePage;
         Thread thread2 = new Thread(new Runnable() {
@@ -91,7 +97,6 @@ public class GameClient {
         private ArrayList<Wall> walls;
         private int policex, policey,ratx,raty; // 플레이어 위치 좌표
         private String Role;
-        private int gameCount = 0; // 현재 게임 횟수를 추적
         private boolean Catch;
 
         public static GamePage getInstance() {//싱글톤 적용
@@ -119,7 +124,7 @@ public class GameClient {
                 {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
         };
-        public void resetGame() throws IOException {
+        public void resetGame() {
             // 게임 관련 데이터 초기화
             // 예: 플레이어 위치 초기화, 점수 초기화 등
             //startTimer();
@@ -130,15 +135,15 @@ public class GameClient {
             raty = 520;
             police.setPosition(policex, policey);
             rat.setPosition(ratx, raty);
-//
-//            if(role.equals("police")&&gameCount==0){
+
+//            if(role.equals("police")&&gameCount==1){
 //                firstCop=name;
-//            }else if(role.equals("police")&&gameCount==1){
+//            }else if(role.equals("police")&&gameCount==2){
 //                secondCop=name;
 //            }
 
             // 역할 교체
-            if (role.equals("police")&&gameCount==0) {
+            if (role.equals("police")&&gameCount==1) {
 
                 role = "rat";
             } else {
@@ -148,12 +153,15 @@ public class GameClient {
 
 
             // 게임 횟수 증가
-            gameCount++;
+
 
             // 2판이 끝났다면 로그인 화면으로 돌아가기
             if (gameCount == 2) {
                 endGame();
+                //sendCatchToServer("end"); // 서버에게 게임 종료 신호를 보냅니다.
+
             }
+            gameCount+=1;
 
         }
 
@@ -205,13 +213,8 @@ public class GameClient {
                         if (key == KeyEvent.VK_SPACE && isCharactersNear(police, rat, 40)) {
                             // 게임 종료 처리
                             System.out.println("게임 종료: 경찰이 쥐를 잡았습니다.");
-                            //gameIsOver();
                             sendCatchToServer("reset");
-                            try {
-                                resetGame(); // 게임 리셋 및 역할 교체
-                            } catch (IOException ex) {
-                                throw new RuntimeException(ex);
-                            }
+                            resetGame(); // 게임 리셋 및 역할 교체
                             // 게임 종료 로직 추가
                         }
                     } else {
@@ -240,6 +243,8 @@ public class GameClient {
                 }
             });
         }
+
+
 
 
 
@@ -329,15 +334,12 @@ public class GameClient {
             return Math.sqrt(dx * dx + dy * dy) <= distance;
         }
         public void endGame() {
-            sendCatchToServer("end"); // 서버에게 게임 종료 신호를 보냅니다.
-
             // 현재 게임 페이지를 종료
             SwingUtilities.getWindowAncestor(this).dispose();
             // 새 로그인 화면 생성 및 표시
             SwingUtilities.invokeLater(() -> {
-                Client client = new Client();
+                Client.getInstance().setVisible(true);
             });
-
         }
 
         private void screenDraw(Graphics g){

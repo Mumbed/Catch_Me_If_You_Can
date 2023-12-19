@@ -6,7 +6,15 @@ import Screen.LoginPage;
 import javax.swing.*;
 
 public class Client extends JFrame {
-    Client() {
+    private static Client instance; // 클라이언트 인스턴스 상태 추적을 위한 정적 변수
+
+    public static synchronized Client getInstance() {
+        if (instance == null) {
+            instance = new Client();
+        }
+        return instance;
+    }
+    private Client() {
 
         setSize(1100, 700);
         getContentPane().add(new LoginPage()); // LoginPage에 클라이언트 인스턴스를 전달

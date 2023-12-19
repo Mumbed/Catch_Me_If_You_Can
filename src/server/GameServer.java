@@ -122,6 +122,7 @@ public class GameServer  {
                 System.out.println(gameCount+"번째 게임 종료! 걸린 시간: " + secondTime + " 밀리초");
                 String message = gameCount+"번째 게임이 종료되었습니다!\n 범인 검거까지 : " + secondTime+ " 초 걸렸습니다\n"+"따라서 승자는"+victoryName;
                 JOptionPane.showMessageDialog(null, message, "게임 결과", JOptionPane.INFORMATION_MESSAGE);
+                clients.clear();
             }
 
 
@@ -136,9 +137,7 @@ public class GameServer  {
                     String msg = is.readLine();
                     System.out.println("server received : "+msg);
 
-                    if(msg.equals("reset police")){
-                        gameOver2();
-                    }
+
                     for (ClientHandler t : GameServer.clients) {//스레드 클래스 반환 리스트 개수만큼
                         System.out.println(name+" 클라이언트 에게 전송 ");
 
@@ -148,9 +147,12 @@ public class GameServer  {
                         t.os.write(name+" "+msg+"\n");//연결되어있는 클라이언트 에게 write
                         t.os.flush();
                     }
-
+                    if(msg.equals("reset police")){
+                        gameOver2();
+                    }
                     // 받은 메시지를 모든 클라이언트에게 브로드캐스트합니다.
                 }
+
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
