@@ -123,6 +123,8 @@ public class GameServer  {
                 String message = gameCount+"번째 게임이 종료되었습니다!\n 범인 검거까지 : " + secondTime+ " 초 걸렸습니다\n"+"따라서 승자는"+victoryName;
                 JOptionPane.showMessageDialog(null, message, "게임 결과", JOptionPane.INFORMATION_MESSAGE);
                 clients.clear();
+                gameCount=0;
+                clientCount=0;
             }
 
 
