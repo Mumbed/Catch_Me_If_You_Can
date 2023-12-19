@@ -83,6 +83,7 @@ public class GameServer  {
                 }
                 if(clientCount==1){
                     startTime =getTime(); // 시작시간
+
                 }
                 for (ClientHandler t : GameServer.clients) {//스레드 클래스 반환 리스트 개수만큼
 
