@@ -1,14 +1,14 @@
 package Screen;
 
 import client.Client;
-import client.ScreenManager;
+import client.Screen;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class LoginPage extends ScreenManager {
+public class LoginPage extends Screen {
     public JTextField id;
     public JTextField ipAddress;
     public JTextField port;

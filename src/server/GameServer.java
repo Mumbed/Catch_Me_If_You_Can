@@ -48,7 +48,7 @@ public class GameServer  {
         }
     }
     public static void main(String[] args) {
-        int port = 12345; // 포트 번호를 필요에 따라 변경하세요.
+        int port = 12345;
 
         GameServer server = new GameServer(port);
         server.startServer();
@@ -132,8 +132,6 @@ public class GameServer  {
                 // 커스텀 패널을 사용하여 JOptionPane 표시
                 JOptionPane.showMessageDialog(null, panel, "게임 결과", JOptionPane.PLAIN_MESSAGE);
 
-
-
             }
             if (gameCount == 2) {
                 secondTime = (int) endTime;
@@ -156,7 +154,6 @@ public class GameServer  {
                 clients.clear();
             }
         }
-
 
         @Override
         public void run() {
