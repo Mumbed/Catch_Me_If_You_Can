@@ -124,6 +124,16 @@ public class GameServer  {
                 System.out.println(gameCount + "번째 게임 종료! 걸린 시간: " + firstTime + " 밀리초");
                 startTime = getTime();
                 System.out.println("첫번째 시작시간초기화 두번째 게임시작시간" + startTime);
+                String message = gameCount + "번째 게임이 종료되었습니다!\n 범인 검거까지 : " +  firstTime + " 초 걸렸습니다\n";
+                JLabel messageLabel = new JLabel(message);
+                messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                panel.add(messageLabel);
+
+                // 커스텀 패널을 사용하여 JOptionPane 표시
+                JOptionPane.showMessageDialog(null, panel, "게임 결과", JOptionPane.PLAIN_MESSAGE);
+
+
+
             }
             if (gameCount == 2) {
                 secondTime = (int) endTime;
@@ -134,20 +144,17 @@ public class GameServer  {
                 }
                 System.out.println(firstTime + "대" + secondTime + "로");
                 System.out.println(gameCount + "번째 게임 종료! 걸린 시간: " + secondTime + " 밀리초");
-                clients.clear();
+                String message = gameCount + "번째 게임이 종료되었습니다!\n 범인 검거까지 : " +  secondTime + " 초 걸렸습니다\n" +  "따라서 승자는 " + victoryName;
+                JLabel messageLabel = new JLabel(message);
+                messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                panel.add(messageLabel);
+
+                // 커스텀 패널을 사용하여 JOptionPane 표시
+                JOptionPane.showMessageDialog(null, panel, "게임 결과", JOptionPane.PLAIN_MESSAGE);
                 gameCount = 0;
                 clientCount = 0;
+                clients.clear();
             }
-            // 텍스트 레이블 추가
-            String message = gameCount + "번째 게임이 종료되었습니다!\n 범인 검거까지 : " + (gameCount == 1 ? firstTime : secondTime) + " 초 걸렸습니다\n" + (gameCount == 2 ? "따라서 승자는 " + victoryName : "");
-            JLabel messageLabel = new JLabel(message);
-            messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            panel.add(messageLabel);
-
-            // 커스텀 패널을 사용하여 JOptionPane 표시
-            JOptionPane.showMessageDialog(null, panel, "게임 결과", JOptionPane.PLAIN_MESSAGE);
-
-
         }
 
 
